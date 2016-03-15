@@ -11,7 +11,7 @@ public final class FilePrinter {
         this.driveService = driveService;
     }
 
-    public void printAllFiles(){
+    public void printAllFiles() {
         try {
             driveService.files()
                     .list()
