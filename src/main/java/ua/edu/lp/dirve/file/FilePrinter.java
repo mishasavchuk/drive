@@ -1,4 +1,4 @@
-package ua.edu.lp.dirve;
+package ua.edu.lp.dirve.file;
 
 import com.google.api.services.drive.Drive;
 

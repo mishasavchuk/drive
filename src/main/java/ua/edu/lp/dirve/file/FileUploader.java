@@ -1,14 +1,14 @@
-package ua.edu.lp.dirve;
+package ua.edu.lp.dirve.file;
 
 import com.google.api.client.http.InputStreamContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
-import ua.edu.lp.dirve.util.GoogleDriveUtils;
+import ua.edu.lp.dirve.util.GoogleDriveServiceFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 public final class FileUploader {
     private final Drive driveService;
@@ -18,8 +18,8 @@ public final class FileUploader {
     }
 
     public void uploadFile(String path) {
-        try (InputStream in = GoogleDriveUtils.class.getResourceAsStream(path)) {
-            Assert.notNull(in, String.format("File %s not found", path));
+        try (InputStream in = GoogleDriveServiceFactory.class.getResourceAsStream(path)) {
+            Objects.requireNonNull(in, String.format("File %s not found", path));
 
             File content = new File();
             String name = StringUtils.substringAfterLast(path, "/");
