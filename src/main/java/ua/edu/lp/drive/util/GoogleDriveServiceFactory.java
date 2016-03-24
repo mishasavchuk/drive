@@ -1,4 +1,4 @@
-package ua.edu.lp.dirve.util;
+package ua.edu.lp.drive.util;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -12,6 +12,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
+import lombok.SneakyThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,31 +30,24 @@ public final class GoogleDriveServiceFactory {
     private final HttpTransport httpTransport;
     private final String username;
 
+    @SneakyThrows({IOException.class, GeneralSecurityException.class})
     private GoogleDriveServiceFactory(String username) {
         this.username = username;
         this.jsonFactory = JacksonFactory.getDefaultInstance();
-        this.httpTransport = createHttpTransport();
+        this.httpTransport =  GoogleNetHttpTransport.newTrustedTransport();
     }
 
-    public static Drive createServiceFor(String username) {
+    public static Drive createFor(String username) throws IOException {
         return new GoogleDriveServiceFactory(username).getDriveService();
     }
 
-    private Drive getDriveService() {
+    private Drive getDriveService() throws IOException {
         return new Drive.Builder(httpTransport, jsonFactory, authorize())
                 .setApplicationName(String.format("%s-drive", username))
                 .build();
     }
 
-    private HttpTransport createHttpTransport() {
-        try {
-            return GoogleNetHttpTransport.newTrustedTransport();
-        } catch (IOException | GeneralSecurityException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    private Credential authorize() {
+    private Credential authorize() throws IOException {
         try (InputStream in = GoogleDriveServiceFactory.class.getResourceAsStream(
                 String.format("/%s-client-secret.json", username)
         )) {
@@ -71,8 +65,6 @@ public final class GoogleDriveServiceFactory {
             Credential credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize(username);
             System.out.printf("Credentials saved to %s\n", dataStoreDir.getAbsolutePath());
             return credential;
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
         }
     }
 

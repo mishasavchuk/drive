@@ -1,10 +1,10 @@
-package ua.edu.lp.dirve.file;
+package ua.edu.lp.drive.file;
 
 import com.google.api.client.http.InputStreamContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import org.apache.commons.lang3.StringUtils;
-import ua.edu.lp.dirve.util.GoogleDriveServiceFactory;
+import ua.edu.lp.drive.util.GoogleDriveServiceFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +17,7 @@ public final class FileUploader {
         this.driveService = driveService;
     }
 
-    public void uploadFile(String path) {
+    public void uploadFile(String path) throws IOException {
         try (InputStream in = GoogleDriveServiceFactory.class.getResourceAsStream(path)) {
             Objects.requireNonNull(in, String.format("File %s not found", path));
 
@@ -30,8 +30,6 @@ public final class FileUploader {
                     .execute();
 
             System.out.printf("File %s was successfully uploaded", name);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
         }
     }
 }
